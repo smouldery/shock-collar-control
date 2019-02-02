@@ -1,3 +1,6 @@
+from collarbot_config import *
+## this loads the TOKEN variable for the discord module.""
+## you need a file in the same folder as this script with the name collarbot_config.py, containing one line, "TOKEN = '<yourtoken>'"
 import gpiozero
 ## used to manually control the GPIO pins.
 import discord
@@ -207,9 +210,6 @@ def transmit(mode_,power_,time_):
 
 print("variables and functions defined")
 ## debugging purposes.
-
-TOKEN = '<your token here>'
-## this is your PERSONAL discord bot token.
 
 client = discord.Client()
 ## convenience purposes. 
