@@ -228,6 +228,11 @@ async def on_message(message):
         msg = '{0.author.mention}, online!'.format(message)
         await client.send_message(message.channel, msg)
  
+    ## list commands and format, and default values when user says !help
+    if message.content.startswith('!help'):
+        msg = '{0.author.mention}, Hi there! \n i\'m is still incomplete but right now I can: \n- Flash the collar, say !flash \n- Beep the collar, say !beep \n- Vibrate the collar, say !vibrate 003% 0.50s, where 003% is a power level between 003 and ' + str(VibrateMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(VibrateMaxTime) + '. \n- administrate a shock! Say !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock. \n- print this help promt using !help \n- Test if the bot is online using !test'.format(message)
+        await client.send_message(message.channel, msg)
+
     ## function to flash the collar. currently stuck on 1 second for convenience.
     if message.content.startswith('!flash'):
         mode_ = 1
