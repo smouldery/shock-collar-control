@@ -1,10 +1,4 @@
 # setup for  collarbot, tested on Rasbian 9 (Stretch)
-#advising the user to check for duplicate lines in rc.local if the script has been run before.
-echo "if this script has been run before on this machine, the script will still run, but this may result in the bot being started twice on pi boot."
-echo "if this is the case, once installation is complete and pi has rebooted, please edit /etc/rc.local using the command 'sudo nano /etc/rc.local' to remove the duplicated line"
-echo "this line can be identified by looking for  python3 /opt/collarbot/collarbot.py &, make sure there's only one such line."
-echo "please make a note of this and press enter to continue with the installation, or ctrl+c to end the setup"
-read -p "press enter when ready to continue..." randomvariable
 echo "starting the install now"
 
 #first step, we update the list of packages.. 
@@ -36,12 +30,10 @@ echo "TOKEN = '"$botkey"'" >> /opt/collarbot/collarbot_config.py
 echo "now we make sure the folder and files are executable..."
 chmod -R 755 /opt/collarbot/
 echo "Great! now we're done with all that, let's make sure the script runs whenever your pi boots."
-echo " to do this, we put it in a file designed for this purpose, /etc/rc.local. first, we activate it..."
-chmod +x /etc/rc.local
-echo "and now we add a line telling it to start our program. this is appended at the end of the file"
-sed -i -e '$i \python3 /opt/collarbot/collarbot.py &\n' /etc/rc.local
-echo "great! now the bot will boot at startup. now all we need to do is to reboot and test it out!"
-echo "press enter when you're ready to reboot"
-read -p "Press enter to reboot your pi" randomvariable2
-reboot
-
+echo "to do this, we add it as a service to systemd. this involves downloading a file from the github and putting it in the relevant folder,"
+echo " reloading systemd, enabling the service to start at boot, and finally, starting the service"
+wget -O /etc/systemd/system/collarbot.service 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.service'
+systemctl daemon-reload
+systemctl enable collarbot
+systemctl start collarbot
+echo "in about 5-10 seconds your bot should now boot. check your discord server and try it! type !help for a list of commands"
