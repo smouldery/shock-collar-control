@@ -37,4 +37,8 @@ this project aims to take manually controlled shock collars, and introduce a rem
   - 4.3: documentation documentation documentation! this will be my FIRST priority and i'll focus on setup first, then outline my process for decoding the collar. i'll also attach some documetation / photo of the collar itself so if anyone wants to jump in and try and secure one themselves they can try and get a reasonably compatible one. 
   
  Thanks for reading, comments or suggestions are welcome, keep them sfw please folks!
+
+HUGE THANKS TO THE FOLLOWING PEOPLE:
+
+- thank you to Github user CodeYouFools for help with systemd and some file path / install courtesy updates, as well as general suggestions and help
    
