@@ -1,13 +1,11 @@
-# setup for  collarbot, tested on Rasbian
-#before we start, we check if it's been installed already
-if [ -f /root/collarbot ]; then
-    echo "this script has been run before on this machine. the script will still run, but this may result in the bot being started twice."
-    echo "once installation is complete and pi has rebooted, please edit /etc/rc.local using the command 'sudo nano /etc/rc.local' to remove the duplicated line"
-    echo "this line can be identified by looking for a file path ending in /collarbot/collarbot.py, make sure there's only one such line."
-    echo "please make a note of this and press enter to continue with the installation, or ctrl+c to end the setup"
-    read -p "press enter when ready to continue..." randomvariable
-    echo "starting the install now"
-fi
+# setup for  collarbot, tested on Rasbian 9 (Stretch)
+#advising the user to check for duplicate lines in rc.local if the script has been run before.
+echo "if this script has been run before on this machine, the script will still run, but this may result in the bot being started twice on pi boot."
+echo "if this is the case, once installation is complete and pi has rebooted, please edit /etc/rc.local using the command 'sudo nano /etc/rc.local' to remove the duplicated line"
+echo "this line can be identified by looking for a file path ending in /collarbot/collarbot.py, make sure there's only one such line."
+echo "please make a note of this and press enter to continue with the installation, or ctrl+c to end the setup"
+read -p "press enter when ready to continue..." randomvariable
+echo "starting the install now"
 
 #first step, we update the list of packages and update any packages. 
 echo "updating package list and any installed packages..."
@@ -41,11 +39,7 @@ chmod +x /etc/rc.local
 echo "and now we add a line telling it to start our program. this is appended at the end of the file"
 sed -i -e '$i \python3 '`pwd`'/collarbot/collarbot.py &\n' /etc/rc.local
 echo "great! now the bot will boot at startup. now all we need to do is to reboot and test it out!"
-echo "one more thing - if this install script is run more than once, it can cause issues"
-echo "so, we need to add something (a file in root, called collarbot, containing 'installed', which we check for at the start of this script"
-echo "and if it's present warn the user. adding the file now"
-echo "installed" >> /root/collarbot
-echo "ok, all done! press enter when you're ready to reboot"
+echo "press enter when you're ready to reboot"
 read -p "Press enter to reboot your pi" randomvariable2
 reboot
 
