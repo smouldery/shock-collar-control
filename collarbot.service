@@ -1,0 +1,11 @@
+[Unit]
+Description=Shock Collar Discord Bot
+Documentation=https://github.com/smouldery/shock-collar-control/wiki
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/python3 /opt/collarbot/collarbot.py
+
+[Install]
+WantedBy=multi-user.target
