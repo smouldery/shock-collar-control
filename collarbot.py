@@ -256,13 +256,13 @@ async def on_message(message):
     if message.content.startswith('!vibrate'):
         mode_ = 3
 
-        if message.content[12] == '%':
+        if len(message.content) == 18 and message.content[12] == '%':
             power_ = message.content[9:12]
             if int(power_) < 3:
                 power = 3
             print(power_)
         else:
-            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%'.format(message)
+            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%, and the form !vibrate 020% 0.50s'.format(message)
             await client.send_message(message.channel, msg)
         
         if message.content[18] == 's' and float(message.content[14:18]) > 0.24 and float(message.content[14:18]) < 9.00:
@@ -270,7 +270,7 @@ async def on_message(message):
             
             print(time_)
         else:
-            msg = '{0.author.mention}, please time between 0.25-9 seconds in form 0.00s'.format(message)
+            msg = '{0.author.mention}, please time between 0.25-9 seconds as 0.00s, and the form !vibrate 020% 0.50s'.format(message)
             await client.send_message(message.channel, msg)
 
         transmit(mode_,power_,time_)
@@ -286,7 +286,7 @@ async def on_message(message):
         mode_ = 4
 
         ## we check the code matches the syntax (!shock:3 044% 1.00s)
-        if message.content[12] == '%':
+        if len(message.content) == 18 and message.content[12] == '%':
             ## if it does, grab the power. we don't validate this as we assume if the syntax for the % matches,
             ## so do the preceeding 3 digits.
             power_ = message.content[9:12]
@@ -298,7 +298,7 @@ async def on_message(message):
             ## debugging purposes. 
         else:
         ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%'.format(message)
+            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%, and the form !vibrate 020% 0.50s'.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
@@ -314,7 +314,7 @@ async def on_message(message):
             ## debugging purposes. 
         else:
             ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please time between 0.25-9 seconds in form 0.00s'.format(message)
+            msg = '{0.author.mention}, please time between 0.25-9 seconds as 0.00s and the form !vibrate 020% 0.00s'.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
