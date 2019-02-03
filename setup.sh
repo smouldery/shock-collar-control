@@ -23,9 +23,10 @@ pip3 install gpiozero
 echo "gpio zero installed!"
 pip3 install discord
 echo "discord module installed!"
-echo "now we're ready to copy the script from github, and install it with your bot key. if you haven't already, create a bot on discord's site (see github wiki for how to do this"
-echo "we install this in /opt/ under a new folder, collarbot. full path, /opt/collarbot/. first we make the folder, then download the script. doing this now."
+echo "now we're ready to copy the script and defaults file from github, and install it with your bot key. if you haven't already, create a bot on discord's site (see github wiki for how to do this"
+echo "we install this in /opt/ under a new folder, collarbot. full path, /opt/collarbot/. first we make the folder, then download the files. doing this now."
 mkdir /opt/collarbot/
+wget -O /opt/collarbot/collarbot_config.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot_config.py'
 wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.py'
 echo "done! now we need to add your discord bot key so it works with YOUR bot"
 read -p "enter your bot key here then press enter: " botkey
