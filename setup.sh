@@ -30,7 +30,9 @@ echo "TOKEN = '"$botkey"'" >> /opt/collarbot/collarbot_config.py
 echo "now we make sure the folder and files are executable..."
 chmod -R 755 /opt/collarbot/
 echo "Great! now we're done with all that, let's make sure the script runs whenever your pi boots."
-echo "to do this, we add it as a service to systemd. this involves downloading a file from the github and putting it in the relevant folder,"
+echo "To do this we first make sure the bot can access the GPIO ports"
+usermod -a -G gpio nobody
+echo "next, we add it as a service to systemd. this involves downloading a file from the github and putting it in the relevant folder,"
 echo " reloading systemd, enabling the service to start at boot, and finally, starting the service"
 wget -O /etc/systemd/system/collarbot.service 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.service'
 systemctl daemon-reload

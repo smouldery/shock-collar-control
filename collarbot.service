@@ -4,7 +4,7 @@ Documentation=https://github.com/smouldery/shock-collar-control/wiki
 After=network.target
 
 [Service]
-User=root
+User=nobody
 ExecStart=/usr/bin/python3 /opt/collarbot/collarbot.py
 
 [Install]
