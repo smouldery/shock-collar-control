@@ -269,6 +269,7 @@ async def on_message(message):
         transmit(mode_,power_,time_,channel_,key_)
         msg = '{0.author.mention}, beeping now!'.format(message)
         await client.send_message(message.channel, msg)
+
         
     ## fully functional vibration of collar. can set time and power. 
     if message.content.startswith('!vibrate'):
@@ -299,6 +300,40 @@ async def on_message(message):
         msg = '{0.author.mention}, vibrating now :3'.format(message)
         await client.send_message(message.channel, msg)   
 
+     
+    if message.content.startswith('!shockD'):
+        
+        ## we already know the mode - so we set it now.
+        mode_ = 4
+
+        if ShockEnabled == False:
+            msg = '{0.author.mention}, shock mode is disabled. if this is not wanted, please modify config file and restart the bot'.format(message)
+            await client.send_message(message.channel, msg)
+            return
+
+        power_ = int(ShockDefaultLevel)
+
+        if int(power_) < 3:
+            ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
+                power_ = 3
+        print(power_)
+
+        if int(power_) > int(ShockMaxLevel):
+            power_ = int(ShockMaxLevel)
+
+        time_ = float(ShockDefaultTime)
+
+        if float(time_) > float(ShockMaxTime):
+            time_ = float(ShockMaxTime)
+        
+        transmit(mode_,power_,time_,channel_,key_)
+
+        msg = '{0.author.mention}, shocking now at ' + str(power_) + '% for ' + str(time_) + 's :3'.format(message)
+    
+        await client.send_message(message.channel, msg)
+        ## exit once message sent.                   
+        return
+
     #shocks the collar. this one will have full annotation, code is the same as above examples. 
     if message.content.startswith('!shock:3'):
     ## I know the :3 is annoying but it caused issues if it's not there -
@@ -312,7 +347,7 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
             return
         if len(message.content) < 18:
-            msg = '{0.author.mention}, please state in the form !shock:3 020% 0.50s'.format(message)
+            msg = '{0.author.mention}, please state in the form !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
             await client.send_message(message.channel, msg)
             return
         ## we check the code matches the syntax (!shock:3 044% 1.00s)
@@ -330,7 +365,7 @@ async def on_message(message):
             ## debugging purposes. 
         else:
         ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%, and the form !shock:3 020% 0.50s'.format(message)
+            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
@@ -346,11 +381,19 @@ async def on_message(message):
             ## debugging purposes. 
         else:
             ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please time between 0.25-9 seconds as 0.00s and the form !shock:3 020% 0.00s'.format(message)
+            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
             return
+
+        if int(power_) > int(ShockMaxLevel) or float(time_) > float(ShockMaxTime):
+            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
+            ## tell the user that their command doesn't match syntax. 
+            await client.send_message(message.channel, msg)
+            ## exit once this message is sent. 
+            return
+            
         transmit(mode_,power_,time_,channel_,key_)
         ## this is defined above - now we have the time, power, mode, we send the pulses as per the function defined above. 
         ## if changing collar / hardware, this is the only part that would probably need to be changed if it had similar functions.
