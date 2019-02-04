@@ -19,3 +19,4 @@ VibrateMaxTime = 9.50
 channel_ = 1
 ## remote key - if you don't know what this is, leave it as the default!
 key_ = '00101100101001010'
+
