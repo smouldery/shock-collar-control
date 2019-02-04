@@ -27,6 +27,11 @@ zero_space = space - zero
 one = 0.000730
 one_space = space - one
 
+## key
+## if no or incorrectly formatted key, set it manually
+if len(key_) != 17:
+    key_ = '00101100101001010'
+
 ## we use this to control the transmitter manually
 transmitter = gpiozero.LED(17)
 
@@ -59,7 +64,7 @@ def Z():
 ## tell the program how to transmit using a given mode, power and time.
 ## if you're wondering why there's a _, it's because stuff like time is reserved by python
 ## and was causing issues. so I changed them all to be _.
-def transmit(mode_,power_,time_):
+def transmit(mode_,power_,time_,channel_,key_):
 
     print("transmitting now...")
     ## this is for debugging purposes mostly. 
@@ -90,11 +95,15 @@ def transmit(mode_,power_,time_):
         #channel
         ## this sends the channel. this is a binary setting despite having 3 bits. 000 = channel 1
         ## 111 = channel 2
-        ## note: currently stuck on channel one. 
-        Z()
-        Z()
-        Z()
-
+        ## channel will default to 1 if this is not present in settings for some
+        if channel_ == 2:
+            O()
+            O()
+            O()
+        else: 
+            Z()
+            Z()
+            Z()
 
         ##mode
         ## we send the mode.
@@ -119,7 +128,7 @@ def transmit(mode_,power_,time_):
             O()
         else:
             #mode = 2
-            ## beep the collar. it was done like this so the 'else' is a beep, not a shock. 
+            ## beep the collar. it was done like this so the 'else' is a beep, not a shock for safety. 
             Z()
             O()
             Z()
@@ -128,8 +137,14 @@ def transmit(mode_,power_,time_):
         ## key?
         ## seems to be an ID Sequence for the remote.
         ## in any case it's static. 
-        ## 0010 1100 1010 0101 0
-
+        ## 00101100101001010 is the default
+        ## BELOW FEATURE IN BETA!!! 
+        # print (key_)
+        # for x in range (0, 17):
+        #     if int(key_[x]) == 1:
+        #         O()
+        #     else:
+        #         Z()
         Z()
         Z()
         O()
@@ -186,10 +201,14 @@ def transmit(mode_,power_,time_):
         
         ##channel_inverse
         ## as above. inverse of above. 
-        ## note: currently stuck on channel one. 
-        O()
-        O()
-        O()
+        if channel_ == 2:
+            Z()
+            Z()
+            Z()
+        else:
+            O()
+            O()
+            O()
 
         #signoff
         ## there is NOT an extented 'zero' to close it. that's just for the first one 
@@ -238,7 +257,7 @@ async def on_message(message):
         mode_ = 1
         power_ = 1
         time_ = 1
-        transmit(mode_,power_,time_)
+        transmit(mode_,power_,time_,channel_,key_)
         msg = '{0.author.mention}, flashing now!'.format(message)
         await client.send_message(message.channel, msg)
 
@@ -247,7 +266,7 @@ async def on_message(message):
         mode_ = 2
         power_ = 1
         time_ = 1
-        transmit(mode_,power_,time_)
+        transmit(mode_,power_,time_,channel_,key_)
         msg = '{0.author.mention}, beeping now!'.format(message)
         await client.send_message(message.channel, msg)
         
@@ -276,7 +295,7 @@ async def on_message(message):
             msg = '{0.author.mention}, please time between 0.25-9 seconds as 0.00s, and the form !vibrate 020% 0.50s'.format(message)
             await client.send_message(message.channel, msg)
             return
-        transmit(mode_,power_,time_)
+        transmit(mode_,power_,time_,channel_,key_)
         msg = '{0.author.mention}, vibrating now :3'.format(message)
         await client.send_message(message.channel, msg)   
 
@@ -332,7 +351,7 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
             return
-        transmit(mode_,power_,time_)
+        transmit(mode_,power_,time_,channel_,key_)
         ## this is defined above - now we have the time, power, mode, we send the pulses as per the function defined above. 
         ## if changing collar / hardware, this is the only part that would probably need to be changed if it had similar functions.
         msg = '{0.author.mention}, shocking now :3'.format(message)
