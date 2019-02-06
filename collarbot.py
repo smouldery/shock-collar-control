@@ -35,31 +35,7 @@ if len(key_) != 17:
 ## we use this to control the transmitter manually
 transmitter = gpiozero.LED(17)
 
-## prep transmit functions
 
-## tell the program how to send a 'one' bit.
-def O():
-    #space = 0.00105
-    space = 0.00080
-    #one = 0.000755
-    one = 0.000730
-    one_space = space - one
-    transmitter.on()
-    time.sleep(one)
-    transmitter.off()
-    time.sleep(one_space);
-
-## tell the program how to send a 'zero' bit. 
-def Z():
-    #space = 0.00105
-    space = 0.00080
-    #zero = 0.00023
-    zero = 0.00015
-    zero_space = space - zero
-    transmitter.on()
-    time.sleep(zero)
-    transmitter.off()
-    time.sleep(zero_space);
 
 ## tell the program how to transmit using a given mode, power and time.
 ## if you're wondering why there's a _, it's because stuff like time is reserved by python
@@ -69,7 +45,8 @@ def transmit(mode_,power_,time_,channel_,key_):
     print("transmitting now...")
     ## this is for debugging purposes mostly. 
 
-    power_binary = '{0:08b}'.format(int(power_))
+    power_binary = '0000101'
+    #power_binary = '{0:08b}'.format(int(power_))
     ## we convert the power value between 0-100 (After converting it to an interger) to a 7 bit binary encoded number. 
 
     print(power_binary)
@@ -78,6 +55,42 @@ def transmit(mode_,power_,time_,channel_,key_):
     timer = time.time() + time_
     ## we set 'timer' as the current time + the time we want the thing to last, gettin the time we need to stop transmitting.
 
+    ## def channel string:
+    if channel_ == 2:
+        channel_sequence = '111'
+        channel_sequence_inverse = '000'
+    else: 
+        channel_sequence = '000'
+        channel_sequence_inverse = '111'
+
+    if mode_ == 1:
+        ## flash the ight on the collar. 
+        mode_sequnce = '1000'
+        mode_sequnce_inverse = '0111'
+    elif mode_ == 3:
+        ## vibrate the collar
+        mode_sequnce = '0010'
+        mode_sequnce_inverse = '1101'
+    elif mode_ == 4:
+        #shock the collar 
+        mode_sequnce = '0001'
+        mode_sequnce_inverse = '1110'
+    else:
+        #mode = 2
+        ## beep the collar. it was done like this so the 'else' is a beep, not a shock for safety. 
+        mode_sequnce = '0100'
+        mode_sequnce_inverse = '1011' 
+
+    # Define the key! 
+
+    key_sequence = key_
+    
+
+    sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
+
+    print('S' + sequence)
+    
+
     while True:
         ## starting bit
 
@@ -85,136 +98,19 @@ def transmit(mode_,power_,time_,channel_,key_):
         time.sleep(start)
         transmitter.off()
         time.sleep(start_gap)
-        ## this sends the 'starting bit' - it's longer than a normal One bit.
-        ## see control-protocol.md on the github for details/
 
-        ## start primary sequence
-        O()
-        #there's two ones in the start sequence, this sends the normal one.
-
-        #channel
-        ## this sends the channel. this is a binary setting despite having 3 bits. 000 = channel 1
-        ## 111 = channel 2
-        ## channel will default to 1 if this is not present in settings for some
-        if channel_ == 2:
-            O()
-            O()
-            O()
-        else: 
-            Z()
-            Z()
-            Z()
-
-        ##mode
-        ## we send the mode.
-
-        if mode_ == 1:
-        ## flash the ight on the collar. 
-            O()
-            Z()
-            Z()
-            Z()
-        elif mode_ == 3:
-        ## vibrate the collar
-            Z()
-            Z()
-            O()
-            Z()
-        elif mode_ == 4:
-        ## vibrate the collar.
-            Z()
-            Z()
-            Z()
-            O()
-        else:
-            #mode = 2
-            ## beep the collar. it was done like this so the 'else' is a beep, not a shock for safety. 
-            Z()
-            O()
-            Z()
-            Z()
-        
-        ## key?
-        ## seems to be an ID Sequence for the remote.
-        ## in any case it's static. 
-        ## 00101100101001010 is the default
-        ## BELOW FEATURE IN BETA!!! 
-        # print (key_)
-        # for x in range (0, 17):
-        #     if int(key_[x]) == 1:
-        #         O()
-        #     else:
-        #         Z()
-        Z()
-        Z()
-        O()
-        Z()
-        
-        O()
-        O()
-        Z()
-        Z()
-        
-        O()
-        Z()
-        O()
-        Z()
-
-        Z()
-        O()
-        Z()
-        O()
-        Z()
-
-        
-    ## power 
-    ## sends the power. we defined the 7 bit binary sequence earlier, this sends it.
-    ## again we use zero as the 'else' because that's the lower power setting.
-        for x in range (0, 7):
-            if int(power_binary[x]) == 1:
-                O()
+        for x in range (41):
+    
+            if int(sequence[x]) == 1:
+                transmitter.on()
+                time.sleep(one)
+                transmitter.off()
+                time.sleep(one_space);
             else:
-                Z()
-    ## mode inverse
-    ## this sends the mode - the closing 7 bits are the inverse of the first 7
-        if mode_ == 1:
-            O()
-            O()
-            O()
-            Z()
-        elif mode_ == 3:
-            O()
-            Z()
-            O()
-            O()
-        elif mode_ == 4:
-            Z()
-            O()
-            O()
-            O()
-        else:
-            #mode = 2 
-            O()
-            O()
-            Z()
-            O()
-        
-        ##channel_inverse
-        ## as above. inverse of above. 
-        if channel_ == 2:
-            Z()
-            Z()
-            Z()
-        else:
-            O()
-            O()
-            O()
-
-        #signoff
-        ## there is NOT an extented 'zero' to close it. that's just for the first one 
-        ## and might not even be intentional.
-        Z()
-        Z()
+                transmitter.on()
+                time.sleep(zero)
+                transmitter.off()
+                time.sleep(zero_space);
 
         ## the way the collar does timing, we just need to send the same sequence for as long as we want the collar to work. 
         ## the sleep here is to make sure we aren't bunching them up too much. 
