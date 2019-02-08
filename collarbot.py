@@ -1,8 +1,7 @@
 from collarbot_config import *
 ## this loads the TOKEN variable for the discord module.""
 ## you need a file in the same folder as this script with the name collarbot_config.py, containing one line, "TOKEN = '<yourtoken>'"
-import gpiozero
-## used to manually control the GPIO pins.
+
 import discord
 ## discord bot interface
 import time
@@ -13,28 +12,11 @@ import time
 ## the reason there's ones commented out is because I made manual adjustments and wanted to keep the old values. 
 ## i'll probably delete later.
 
-#start = 0.001545
-start = 0.001300
-#start_space = 0.00236
-start_space = 0.00200
-start_gap = start_space - start
-#space = 0.00105
-space = 0.00080
-#zero = 0.00023
-zero = 0.00015
-zero_space = space - zero
-#one = 0.000755
-one = 0.000730
-one_space = space - one
 
 ## key
 ## if no or incorrectly formatted key, set it manually
 if len(key_) != 17:
     key_ = '00101100101001010'
-
-## we use this to control the transmitter manually
-transmitter = gpiozero.LED(17)
-
 
 
 ## tell the program how to transmit using a given mode, power and time.
@@ -89,38 +71,6 @@ def transmit(mode_,power_,time_,channel_,key_):
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
     print('S' + sequence)
-    
-
-    while True:
-        ## starting bit
-
-        transmitter.on()
-        time.sleep(start)
-        transmitter.off()
-        time.sleep(start_gap)
-
-        for x in range (41):
-    
-            if int(sequence[x]) == 1:
-                transmitter.on()
-                time.sleep(one)
-                transmitter.off()
-                time.sleep(one_space);
-            else:
-                transmitter.on()
-                time.sleep(zero)
-                transmitter.off()
-                time.sleep(zero_space);
-
-        ## the way the collar does timing, we just need to send the same sequence for as long as we want the collar to work. 
-        ## the sleep here is to make sure we aren't bunching them up too much. 
-        time.sleep(0.003)
-
-        if time.time() > timer:
-            break;
-    print("transmit complete")
-    ## debugging purposes.
-
 
 
 print("variables and functions defined")
@@ -298,6 +248,7 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
         ## exit once message sent.                   
         return
+        
 client.run(TOKEN)
 ## start the discord bot!
 
