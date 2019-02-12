@@ -1,27 +1,45 @@
-// gcc -Wall -o transmitter -lpigpio -lpthread transmitter.c
+// gcc -o transmitter -lpigpio -lpthread -lm transmitter.c
 
 /* tell the compiler to use pigpio */
 #include <pigpio.h>
 /* tell the compiler to use the module that has nanosleep */
-#include <time.h>
+#include <time.h> 
 // so we can do stuff with strings
-#include<string.h>
+#include<string.h> 
 // so we can print, for diagnosticsS
 #include <stdio.h>
+// so we can round stuff
+#include <math.h>
 
 int gpioSetMode(unsigned, unsigned); 
 int gpioInitialise();
 int gpioWrite(unsigned, unsigned);
 void gpioTerminate();
 
-int main() {
+
+int main(int argc,char arg1[], float arg2) {
+    //load sequence from command line
+    // char sequence[] = argv[1];
+    // float shocktimesec = argv[2];
+    
+    char sequence[] = arg1[]
+    float shocktimesec = arg2
+
 
     /*loads pgpio module*/
     gpioInitialise();
 
     // for now, we manually set the input string to a test value below, just for testing purposes
-    char sequence[] = "10000100001011001010010100000001110111100";
+    // char sequence[] = "10000100001011001010010100000001110111100";
     // 1 000 0100 0010-1100-1010-01010 0000001 1101 111 00
+
+    // same for time value
+    // float shocktimesec = 9.00;
+
+    // number of ticks in this time
+    clock_t shocktimeticks = rint(shocktimesec * CLOCKS_PER_SEC);
+    printf("duration %Lf", (long double)(shocktimeticks));
+
     gpioSetMode(17, 1); // Set GPIO27 as output.
 
     gpioWrite(17, 0); // set gpio to zero, as a formality / just in case it was high. 
@@ -55,7 +73,10 @@ int main() {
     }
     /////////////////////////////////////////////////////////////////
 
-    for (int y = 0; y <= 40 ; y++) {
+    clock_t endtime = clock() + shocktimeticks;
+ 
+
+    while (clock() < endtime) {
         // transmit the START bit. same each time. 
         gpioWrite(17,1); // set pin to one to START transmitting the bit
         /* wait 0 sec and 1300000 nanosec */

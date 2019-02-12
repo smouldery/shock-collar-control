@@ -2,6 +2,9 @@ from collarbot_config import *
 ## this loads the TOKEN variable for the discord module.""
 ## you need a file in the same folder as this script with the name collarbot_config.py, containing one line, "TOKEN = '<yourtoken>'"
 
+from subprocess import call
+## allows us to call our C program using this. 
+
 import discord
 ## discord bot interface
 import time
@@ -34,10 +37,8 @@ def transmit(mode_,power_,time_,channel_,key_):
     print(power_binary)
     ## this is for debugging purposes
 
-    timer = time.time() + time_
-    ## we set 'timer' as the current time + the time we want the thing to last, gettin the time we need to stop transmitting.
-
-    ## def channel string:
+   
+        ## def channel string:
     if channel_ == 2:
         channel_sequence = '111'
         channel_sequence_inverse = '000'
@@ -70,7 +71,11 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
+    c_file_path = './etc/collarbot/transmitter'
+    call(c_file_path,None,sequence,Time)
+
     print('S' + sequence)
+    print("\n time: %f", time_)
 
 
 print("variables and functions defined")
