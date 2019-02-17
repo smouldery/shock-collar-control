@@ -16,6 +16,7 @@ import time
 ## i'll probably delete later.
 
 
+
 ## key
 ## if no or incorrectly formatted key, set it manually
 if len(key_) != 17:
@@ -30,6 +31,10 @@ def transmit(mode_,power_,time_,channel_,key_):
     print("transmitting now...")
     ## this is for debugging purposes mostly. 
 
+    if int(power_) < 3:
+    ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
+        power_ = 3
+
     power_binary = '0000101'
     #power_binary = '{0:08b}'.format(int(power_))
     ## we convert the power value between 0-100 (After converting it to an interger) to a 7 bit binary encoded number. 
@@ -37,6 +42,7 @@ def transmit(mode_,power_,time_,channel_,key_):
     print(power_binary)
     ## this is for debugging purposes
 
+    print (str(channel_))
    
         ## def channel string:
     if channel_ == 2:
@@ -71,11 +77,9 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
-    c_file_path = './etc/collarbot/transmitter'
-    call(c_file_path,None,sequence,Time)
 
     print('S' + sequence)
-    print("\n time: %f", time_)
+    print('\n time: {0}'.format(str(time_)))
 
 
 print("variables and functions defined")
@@ -84,14 +88,43 @@ print("variables and functions defined")
 client = discord.Client()
 ## convenience purposes. 
 
+## defs of message conetent
+
+help_message = ('Hi there! \n i\'m is still incomplete but right now I can: \n- Flash the collar, say !flash \n- Beep the collar, say !beep \n- Vibrate the collar, say !vibrate 003% 0.50s, where 003% is a power level between 003 and {0}, and 0.50s is a time between 0.25 and {1}. \n- administrate a shock! Say !shock:3 003% 0.50s, where 003% is a power level between 003 and {2}, and 0.50s is a time between 0.25 and {3}.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock. \n- print this help promt using !help \n- Test if the bot is online using !test \n set output to channel 1 using !channel \n set output to channel 2 using !channel2'.format(str(VibrateMaxLevel), str(VibrateMaxTime), str(ShockMaxLevel), str(ShockMaxTime)))
+
+shock_mode_disabled = 'shock mode is disabled. if this is not desired, please modify config file and restart the bot. otherwise, please choose a non-shock command.'
+
+wrong_syntax_command_type = 'command' ## dummy
+
+wrong_syntax_shock = 'please state in the form !{0} 003% 0.50s, where 003% is a power level between 003 and {1}, and 0.50s is a time between 0.25 and {2}.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format( wrong_syntax_command_type, str(ShockMaxLevel), str(ShockMaxTime))
+
+wrong_syntax_vibrate = 'please state in the form !{0} 003% 0.50s, where 003% is a power level between 003 and {1}, and 0.50s is a time between 0.25 and {2}.'.format(wrong_syntax_command_type, str(VibrateMaxLevel), str(VibrateMaxTime))
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
 
-    ## note - the code is largely the same on these so i'll put full comments on one only to save space.
+    if message.content.startswith('!channel1'):
+        global channel_
+        channel_ = 1
+        msg = '{0.author.mention}, set to channel 1!'.format(message)
+        await client.send_message(message.channel, msg)
+        return
+    if message.content.startswith('!channel2'):
+        global channel_
+        channel_ = 2
+        msg = '{0.author.mention}, set to channel 2!'.format(message)
+        await client.send_message(message.channel, msg)
+        return
+    ## temp bugfix - channel var isn't coming through to the function for some reason.
 
+    if 'channel_' not in globals():
+        global channel_
+        channel_ = 1
+        print('channelset')
+    ## note - the code is largely the same on these so i'll put full comments on one only to save space.
 
     ## mostly for debugging purposes.
     if message.content.startswith('!test'):
@@ -100,7 +133,7 @@ async def on_message(message):
  
     ## list commands and format, and default values when user says !help
     if message.content.startswith('!help'):
-        msg = '{0.author.mention}, Hi there! \n i\'m is still incomplete but right now I can: \n- Flash the collar, say !flash \n- Beep the collar, say !beep \n- Vibrate the collar, say !vibrate 003% 0.50s, where 003% is a power level between 003 and ' + str(VibrateMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(VibrateMaxTime) + '. \n- administrate a shock! Say !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock. \n- print this help promt using !help \n- Test if the bot is online using !test'.format(message)
+        msg = help_message.format(message)
         await client.send_message(message.channel, msg)
 
     ## function to flash the collar. currently stuck on 1 second for convenience.
@@ -126,17 +159,24 @@ async def on_message(message):
     if message.content.startswith('!vibrate'):
         mode_ = 3
 
+        if message.content == '!vibrate':
+            power_ = int(VibrateDefaultLevel)
+            time_ = float(VibrateDefaultTime)
+            transmit(mode_,power_,time_,channel_,key_)
+            msg = '{0.author.mention}, Vibrating now at {1}% for {2}s'.format(message, str(power_), str(time_))
+            await client.send_message(message.channel, msg)
+            return
+
         if len(message.content) < 18:
-            msg = '{0.author.mention}, please state in the form !vibrate 020% 0.50s'.format(message)
+            
+            msg = wrong_syntax_vibrate.format(message)
             await client.send_message(message.channel, msg)
             return
         if message.content[12] == '%':
             power_ = message.content[9:12]
-            if int(power_) < 3:
-                power = 3
             print(power_)
         else:
-            msg = '{0.author.mention}, please include power between 3-100 with 3 digits i.e 020%, and the form !vibrate 020% 0.50s'.format(message)
+            msg = wrong_syntax_vibrate.format(message)
             await client.send_message(message.channel, msg)
             return
         if message.content[18] == 's' and float(message.content[14:18]) > 0.24 and float(message.content[14:18]) < 9.00:
@@ -144,46 +184,14 @@ async def on_message(message):
             
             print(time_)
         else:
-            msg = '{0.author.mention}, please time between 0.25-9 seconds as 0.00s, and the form !vibrate 020% 0.50s'.format(message)
+            
+            msg = wrong_syntax_vibrate.format(message)
             await client.send_message(message.channel, msg)
             return
         transmit(mode_,power_,time_,channel_,key_)
         msg = '{0.author.mention}, vibrating now :3'.format(message)
         await client.send_message(message.channel, msg)   
 
-     
-    if message.content.startswith('!shockD'):
-        
-        ## we already know the mode - so we set it now.
-        mode_ = 4
-
-        if ShockEnabled == False:
-            msg = '{0.author.mention}, shock mode is disabled. if this is not wanted, please modify config file and restart the bot'.format(message)
-            await client.send_message(message.channel, msg)
-            return
-
-        power_ = int(ShockDefaultLevel)
-
-        if int(power_) < 3:
-            ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
-                power_ = 3
-        print(power_)
-
-        if int(power_) > int(ShockMaxLevel):
-            power_ = int(ShockMaxLevel)
-
-        time_ = float(ShockDefaultTime)
-
-        if float(time_) > float(ShockMaxTime):
-            time_ = float(ShockMaxTime)
-        
-        transmit(mode_,power_,time_,channel_,key_)
-
-        msg = '{0.author.mention}, shocking now at ' + str(power_) + '% for ' + str(time_) + 's :3'.format(message)
-    
-        await client.send_message(message.channel, msg)
-        ## exit once message sent.                   
-        return
 
     #shocks the collar. this one will have full annotation, code is the same as above examples. 
     if message.content.startswith('!shock:3'):
@@ -194,11 +202,19 @@ async def on_message(message):
         mode_ = 4
 
         if ShockEnabled == False:
-            msg = '{0.author.mention}, shock mode is disabled. please modify config file and restart the bot'.format(message)
+            msg = shock_mode_disabled.format(message)
+            await client.send_message(message.channel, msg)
+            return
+        if message.content == '!shock:3':
+            power_ = int(ShockDefaultLevel)           
+            time_ = float(ShockDefaultTime)
+            channel_ = 1
+            transmit(mode_,power_,time_,channel_,key_)
+            msg = '{0.author.mention}, shocking now at {1}% for {2}s :3'.format(message, str(power_), str(time_))
             await client.send_message(message.channel, msg)
             return
         if len(message.content) < 18:
-            msg = '{0.author.mention}, please state in the form !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) +  ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
+            msg = wrong_syntax_shock.format(message)
             await client.send_message(message.channel, msg)
             return
         ## we check the code matches the syntax (!shock:3 044% 1.00s)
@@ -208,15 +224,12 @@ async def on_message(message):
             ## if it does, grab the power. we don't validate this as we assume if the syntax for the % matches,
             ## so do the preceeding 3 digits.
             power_ = message.content[9:12]
-            ## doing the above.
-            if int(power_) < 3:
-            ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
-                power = 3
             print(power_)
             ## debugging purposes. 
         else:
         ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
+            
+            msg = wrong_syntax_shock.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
@@ -232,14 +245,16 @@ async def on_message(message):
             ## debugging purposes. 
         else:
             ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
-            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
+            
+            msg = wrong_syntax_shock.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
             return
 
         if int(power_) > int(ShockMaxLevel) or float(time_) > float(ShockMaxTime):
-            msg = '{0.author.mention}, please state as !shock:3 003% 0.50s, where 003% is a power level between 003 and ' + str(ShockMaxLevel) + ', and 0.50s is a time between 0.25 and ' + str(ShockMaxTime) + '.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock.'.format(message)
+            
+            msg = wrong_syntax_shock.format(message)
             ## tell the user that their command doesn't match syntax. 
             await client.send_message(message.channel, msg)
             ## exit once this message is sent. 
