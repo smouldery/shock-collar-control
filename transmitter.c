@@ -10,6 +10,7 @@
 #include <stdio.h>
 // so we can round stuff
 #include <math.h>
+#include <stdlib.h>     /* strtof */
 
 int gpioSetMode(unsigned, unsigned); 
 int gpioInitialise();
@@ -17,28 +18,26 @@ int gpioWrite(unsigned, unsigned);
 void gpioTerminate();
 
 
-int main(int argc,char arg1[], float arg2) {
-    //load sequence from command line
-    // char sequence[] = argv[1];
-    // float shocktimesec = argv[2];
+int main(int argc, const char **argv) {
     
-    char sequence[] = arg1[]
-    float shocktimesec = arg2
-
+    //char sequencet;strcpy(sequencet, argv[1]);
+    //float shocktimesec = strof (argv[2]);
+    
+    printf(argv[1]);
+    printf(argv[2]);
+    //printf(strof(shocktimesec));
+    printf("\n test\n");
 
     /*loads pgpio module*/
     gpioInitialise();
 
-    // for now, we manually set the input string to a test value below, just for testing purposes
-    // char sequence[] = "10000100001011001010010100000001110111100";
-    // 1 000 0100 0010-1100-1010-01010 0000001 1101 111 00
-
-    // same for time value
-    // float shocktimesec = 9.00;
-
+    float shocktimesec = strtod(argv[2], NULL);
+    // printf('%f', shocktimesec);
     // number of ticks in this time
-    clock_t shocktimeticks = rint(shocktimesec * CLOCKS_PER_SEC);
-    printf("duration %Lf", (long double)(shocktimeticks));
+    // clock_t shocktimeticks = rint(shocktimesecs * CLOCKS_PER_SEC);
+
+    
+
 
     gpioSetMode(17, 1); // Set GPIO27 as output.
 
@@ -73,10 +72,27 @@ int main(int argc,char arg1[], float arg2) {
     }
     /////////////////////////////////////////////////////////////////
 
-    clock_t endtime = clock() + shocktimeticks;
- 
+    struct timespec end_time;
+    struct timespec current_time;
+    
+    double shocktimesec_s = floor(shocktimesec);
+    double shocktimesec_ns = (shocktimesec - floor(shocktimesec)) * 1e9;
 
-    while (clock() < endtime) {
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+    if ((end_time.tv_nsec + shocktimesec_ns ) < 1000000000) {
+        end_time.tv_sec = end_time.tv_sec + shocktimesec_s;
+        end_time.tv_nsec = end_time.tv_nsec + shocktimesec_ns;
+    } else { 
+        end_time.tv_sec = end_time.tv_sec + shocktimesec_s + 1;
+        end_time.tv_nsec = (end_time.tv_nsec + shocktimesec_ns) - 1000000000;
+    } 
+
+    long double end_time_value = end_time.tv_sec + (end_time.tv_nsec / 1e9);
+
+    long double current_time_value = 0;
+
+    do {
         // transmit the START bit. same each time. 
         gpioWrite(17,1); // set pin to one to START transmitting the bit
         /* wait 0 sec and 1300000 nanosec */
@@ -85,29 +101,40 @@ int main(int argc,char arg1[], float arg2) {
         // wait 0 sec and 70000 nanosec
         nanosleep((const struct timespec[]){{0, 730000L}}, NULL);
 
-        printf("%s \n", sequence);
+        printf("%s \n", argv[1]);
+        printf("transmitting...(c) \n");
 
         for (int x = 0; x <= 40 ; x++)
         {
            
-            if (sequence[x] == '1') {
+            if ((argv[1])[x] == '1') {
                 one();
-                printf("%d-1", x);
+                printf("%d-1 \n", x);
             } else {
                 zero();
-                printf("%d-0", x);
+                printf("%d-0 \n", x);
             }
         }
 
         // give it a sec so we put an appropriate gap between the sequences
         nanosleep((const struct timespec[]){{0, 4500000L}}, NULL);   
         printf("\n");
-        }
+
+        clock_gettime(CLOCK_MONOTONIC, &current_time);
+
+        current_time_value = current_time.tv_sec + (current_time.tv_nsec / 1e9);
+        printf("current time: %f", current_time_value);
+        printf("end time: %f", end_time_value);
+        
+
+
+
+        } while (current_time_value < end_time_value);
     // set gpio 27 to zero to be safe
     gpioWrite(27, 0);
 
 
     //ends pigpio module
-    gpioTerminate(); 
+    gpioTerminate();
 
 }

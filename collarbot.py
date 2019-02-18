@@ -31,9 +31,9 @@ def transmit(mode_,power_,time_,channel_,key_):
     print("transmitting now...")
     ## this is for debugging purposes mostly. 
 
-    if int(power_) < 3:
-    ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
-        power_ = 3
+    # if int(power_) < 3 and mode_ is not 2:
+    # ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
+    #     power_ = 3
 
     power_binary = '0000101'
     #power_binary = '{0:08b}'.format(int(power_))
@@ -55,20 +55,23 @@ def transmit(mode_,power_,time_,channel_,key_):
     if mode_ == 1:
         ## flash the ight on the collar. 
         mode_sequnce = '1000'
-        mode_sequnce_inverse = '0111'
+        mode_sequnce_inverse = '1110'
     elif mode_ == 3:
         ## vibrate the collar
         mode_sequnce = '0010'
-        mode_sequnce_inverse = '1101'
+        mode_sequnce_inverse = '1011'
     elif mode_ == 4:
         #shock the collar 
         mode_sequnce = '0001'
-        mode_sequnce_inverse = '1110'
+        mode_sequnce_inverse = '0111'
+    elif mode_ == 2:
+        mode_sequnce = '0100'
+        mode_sequnce_inverse = '1101' 
     else:
         #mode = 2
         ## beep the collar. it was done like this so the 'else' is a beep, not a shock for safety. 
         mode_sequnce = '0100'
-        mode_sequnce_inverse = '1011' 
+        mode_sequnce_inverse = '1101' 
 
     # Define the key! 
 
@@ -77,7 +80,10 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
-
+    print('raw str to transmit... ' + sequence + "\n")
+    print('c stuff start')
+    call(["./transmitter", sequence,str(time_)])
+    print('c stuff done \n')
     print('S' + sequence)
     print('\n time: {0}'.format(str(time_)))
 
