@@ -6,7 +6,7 @@ After=network.target
 [Service]
 User=nobody
 ExecStart=/usr/bin/python3 /opt/collarbot/collarbot.py
-Nice=-10
+Nice=-5
 
 [Install]
 WantedBy=multi-user.target
