@@ -20,12 +20,14 @@ echo "we install this in /opt/ under a new folder, collarbot. full path, /opt/co
 mkdir /opt/collarbot/
 wget -O /opt/collarbot/collarbot_config.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot_config.py'
 wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.py'
+wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/transmitter'
 echo "done! now we need to add your discord bot key so it works with YOUR bot"
 read -p "enter your bot key here then press enter: " botkey
 echo "botkey entered was" $botkey
 echo "now we write this to the config file where the control script can import it!"
 echo "TOKEN = '"$botkey"'" >> /opt/collarbot/collarbot_config.py
 echo "now we make sure the folder and files are executable..."
+chown -R nobody /opt/collarbot/
 chmod -R 755 /opt/collarbot/
 echo "Great! now we're done with all that, let's make sure the script runs whenever your pi boots."
 echo "To do this we first make sure the bot can access the GPIO ports"
