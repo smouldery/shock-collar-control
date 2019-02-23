@@ -15,8 +15,10 @@ VibrateDefaultTime = 0.50
 ## set MAXIMUM vibration levels
 VibrateMaxLevel = 100
 VibrateMaxTime = 9.50
-## Default Collar Channel (must be 1 or 2, if no or invalid value, defaults to one)
-channel_ = 1
 ## remote key - if you don't know what this is, leave it as the default!
 key_ = '00101100101001010'
+
+## it is VERY VERY Important to leave a new line AFTER THIS LINE
+## if this is not done it can break the program. this is not ideal and will be fixed in due course
+## but in the interim leave a new line please 
 
