@@ -82,7 +82,7 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     print('raw str to transmit... ' + sequence + "\n")
     print('c stuff start')
-    call(["./transmitter", sequence,str(time_)])
+    call(["/opt/collarbot/transmitter", sequence,str(time_)])
     print('c stuff done \n')
     print('S' + sequence)
     print('\n time: {0}'.format(str(time_)))

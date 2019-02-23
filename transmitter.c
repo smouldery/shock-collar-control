@@ -1,7 +1,7 @@
-// gcc -o transmitter -lpigpio -lpthread -lm transmitter.c
+// gcc -o transmitter -lpigpio -lpthread -lm -lpigpiod_if2 -lrt transmitter.c
 
-/* tell the compiler to use pigpio */
-#include <pigpio.h>
+/* tell the compiler to use pigpio daemon interface */
+#include <pigpiod_if2.h>
 /* tell the compiler to use the module that has nanosleep */
 #include <time.h> 
 // so we can do stuff with strings
@@ -12,10 +12,10 @@
 #include <math.h>
 #include <stdlib.h>     /* strtof */
 
-int gpioSetMode(unsigned, unsigned); 
-int gpioInitialise();
-int gpioWrite(unsigned, unsigned);
-void gpioTerminate();
+int set_mode(int, unsigned, unsigned); 
+int pigpio_start();
+int gpio_write(int, unsigned, unsigned);
+void pigpio_stop();
 
 
 int main(int argc, const char **argv) {
@@ -29,7 +29,8 @@ int main(int argc, const char **argv) {
     printf("\n test\n");
 
     /*loads pgpio module*/
-    gpioInitialise();
+    int pinumber;
+    pinumber = pigpio_start(NULL, NULL);
 
     float shocktimesec = strtod(argv[2], NULL);
     // printf('%f', shocktimesec);
@@ -39,19 +40,19 @@ int main(int argc, const char **argv) {
     
 
 
-    gpioSetMode(17, 1); // Set GPIO27 as output.
+    set_mode(pinumber,17, 1); // Set GPIO27 as output.
 
-    gpioWrite(17, 0); // set gpio to zero, as a formality / just in case it was high. 
+    gpio_write(pinumber,17, 0); // set gpio to zero, as a formality / just in case it was high. 
 
     // function to transmit a 'zero' bit
     void zero() {
 
-        gpioWrite(17,1); // set pin to one to START transmitting the bit
+        gpio_write(pinumber,17,1); // set pin to one to START transmitting the bit
 
     // wait 0 sec and 150000 nanosec
         nanosleep((const struct timespec[]){{0, 180000L}}, NULL);
         
-        gpioWrite(17, 0); // set pin to zero to STOP transmitting the bit. 
+        gpio_write(pinumber,17,0); // set pin to zero to STOP transmitting the bit. 
 
     //  wait 0 sec and 650000 nanosec */
         nanosleep((const struct timespec[]){{0, 600000L}}, NULL);
@@ -60,12 +61,12 @@ int main(int argc, const char **argv) {
 
     // function to transmit a 'one' bit
     void one() {
-        gpioWrite(17,1); // set pin to one to START transmitting the bit
+        gpio_write(pinumber,17,1); // set pin to one to START transmitting the bit
 
         /* wait 0 sec and 730000 nanosec */
         nanosleep((const struct timespec[]){{0, 730000L}}, NULL);
         
-        gpioWrite(17,0); // set pin to zero to STOP transmitting the bit.
+        gpio_write(pinumber,17,0); // set pin to zero to STOP transmitting the bit.
         
         // wait 0 sec and 70000 nanosec
         nanosleep((const struct timespec[]){{0, 140000L}}, NULL);
@@ -94,10 +95,10 @@ int main(int argc, const char **argv) {
 
     do {
         // transmit the START bit. same each time. 
-        gpioWrite(17,1); // set pin to one to START transmitting the bit
+        gpio_write(pinumber,17,1); // set pin to one to START transmitting the bit
         /* wait 0 sec and 1300000 nanosec */
         nanosleep((const struct timespec[]){{0, 1500000L}}, NULL);
-        gpioWrite(17,0); // set pin to zero to STOP transmitting the bit.
+        gpio_write(pinumber,17,0); // set pin to zero to STOP transmitting the bit.
         // wait 0 sec and 70000 nanosec
         nanosleep((const struct timespec[]){{0, 730000L}}, NULL);
 
@@ -131,10 +132,10 @@ int main(int argc, const char **argv) {
 
         } while (current_time_value < end_time_value);
     // set gpio 27 to zero to be safe
-    gpioWrite(27, 0);
+    gpio_write(pinumber,27, 0);
 
 
     //ends pigpio module
-    gpioTerminate();
+    pigpio_stop(pinumber);
 
 }
