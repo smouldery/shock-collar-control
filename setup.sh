@@ -20,7 +20,7 @@ echo "we install this in /opt/ under a new folder, collarbot. full path, /opt/co
 mkdir /opt/collarbot/
 wget -O /opt/collarbot/collarbot_config.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot_config.py'
 wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.py'
-wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/transmitter'
+wget -O /opt/collarbot/transmitter 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/transmitter'
 echo "done! now we need to add your discord bot key so it works with YOUR bot"
 read -p "enter your bot key here then press enter: " botkey
 echo "botkey entered was" $botkey
