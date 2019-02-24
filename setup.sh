@@ -37,6 +37,5 @@ echo " reloading systemd, enabling the service to start at boot, and finally, st
 wget -O /etc/systemd/system/collarbot.service 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.service'
 chmod 755 /etc/systemd/system/collarbot.service
 systemctl daemon-reload
-systemctl enable --now pigpiod
 systemctl enable --now collarbot
 echo "in about 5-10 seconds your bot should now boot. check your discord server and try it! type !help for a list of commands"
