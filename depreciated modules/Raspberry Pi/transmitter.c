@@ -1,9 +1,14 @@
-// gcc -o transmitter -lpigpio -lpthread -lm transmitter.c\\
+// gcc -o transmitter -lpigpio -lpthread -lm transmitter.c
+
+// THIS MODULE IS DEPRECIATED AND WAS NEVER SUCESSFULLY OPERATIONAL
+// YOU WILL NEED TO FIX THE PROGRAM TO GET IT TO WORK, IT WILL NOT BE MAINTAINED BY ME
 
 // COPRIGHT / LICENSE
 // parts of this code adapted from work by Guillermo A. Amaral B. <g@maral.me>, found on
 // https://elinux.org/RPi_GPIO_Code_Samples which is licenced under a CC BY-SA 3.0 license
 // (See https://creativecommons.org/licenses/by-sa/3.0/)
+// **NOTE - the author has been contactacted and consents to this content
+// being used under a BSD licence.**
 
 // The first part of this code  (code from this point foward and before noted otherwise)
 // is covered by the license of this repository:
@@ -40,19 +45,8 @@ static int GPIOWrite(int pin, int value);
 
 
 int main(int argc, const char **argv) {
-    
-    //char sequencet;strcpy(sequencet, argv[1]);
-    //float shocktimesec = strof (argv[2]);
-    
-    printf(argv[1]);
-    printf(argv[2]);
-    //printf(strof(shocktimesec));
-    printf("\n test\n");
 
     float shocktimesec = strtod(argv[2], NULL);
-    // printf('%f', shocktimesec);
-    // number of ticks in this time
-    // clock_t shocktimeticks = rint(shocktimesecs * CLOCKS_PER_SEC);
 
     if (-1 == GPIOExport(POUT)) // Enable GPIO pin
 	    return(1);
@@ -126,9 +120,6 @@ int main(int argc, const char **argv) {
 	        return(3); // set pin to zero to STOP transmitting the bit.
         // wait 0 sec and 70000 nanosec
         nanosleep((const struct timespec[]){{0, 730000L}}, NULL);
-
-        printf("%s \n", argv[1]);
-        printf("transmitting...(c) \n");
 
         for (int x = 0; x <= 40 ; x++)
         {

@@ -10,6 +10,10 @@ import discord
 import time
 ## so we can use 'sleep'
 
+## for the transmitter function:
+from transmitter import transmitter ## grab the transmitter function from the transmit file
+import pigpio ## import the pigpio library for this function
+
 ## TIMINGS
 ## see control-protocol.md on the github for this project for details of the timings and pictures etc.
 ## the reason there's ones commented out is because I made manual adjustments and wanted to keep the old values. 
@@ -82,7 +86,7 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     print('raw str to transmit... ' + sequence + "\n")
     print('c stuff start')
-    call(["/opt/collarbot/transmitter", sequence,str(time_)])
+    transmitter(sequence, time_)
     print('c stuff done \n')
     print('S' + sequence)
     print('\n time: {0}'.format(str(time_)))

@@ -1,3 +1,7 @@
+## NOT RECCOMENDED - THIS MODULE IS DEPRECIATED AND NO LONGER MAINTAINED
+## NOT GUARANTEED TO WORK
+## takes PARAMATERS and transmits 
+## python3 transmitter_vars.py mode power time channel key (opt)
 
 import gpiozero
 ## used to manually control the GPIO pins.
@@ -12,6 +16,15 @@ time_ = float(sys.argv[2])
 mode_ = int(sys.argv[3])
 channel_ = int(sys.argv[4])
 
+try:
+    len(str(sys.argv[5]))
+except IndexError:
+    key_ = '00101100101001010'
+else:
+    if len(str(sys.argv[5])) != 17:
+        key_ = '00101100101001010'
+    else:
+        key_ = str(sys.argv[5])
 ## TIMINGS
 ## see control-protocol.md on the github for this project for details of the timings and pictures etc.
 ## the reason there's ones commented out is because I made manual adjustments and wanted to keep the old values. 
