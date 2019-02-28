@@ -9,7 +9,7 @@ echo "installing the required SYSTEM packages (python packages are done in the n
 echo "we use python3 to run the control script for the transmitter, and talk to the discord bot."
 echo "we use python3-pip to install the python modules for the python script."
 echo "installing these two now"
-apt-get install -y python3 python3-pip pigpio
+apt-get install -y python3 python3-pip pigpio python3-pigpio
 echo "done! now we install the discord module which talks to the discord bot."
 echo "we use the pyton installer we installed above to do this with 'pip3 install <packagename>"
 pip3 install discord
