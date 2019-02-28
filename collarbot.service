@@ -6,7 +6,7 @@ After=network.target
 [Service]
 User=nobody
 ExecStart=/usr/bin/python3 /opt/collarbot/collarbot.py
-Nice=-5
+Nice=-1
 ExecStartPre=/bin/sleep 10
 
 [Install]

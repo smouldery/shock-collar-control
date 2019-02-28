@@ -9,7 +9,7 @@ echo "installing the required SYSTEM packages (python packages are done in the n
 echo "we use python3 to run the control script for the transmitter, and talk to the discord bot."
 echo "we use python3-pip to install the python modules for the python script."
 echo "installing these two now"
-apt-get install -y python3 python3-pip
+apt-get install -y python3 python3-pip pigpio
 echo "done! now we install the discord module which talks to the discord bot."
 echo "we use the pyton installer we installed above to do this with 'pip3 install <packagename>"
 pip3 install discord
@@ -19,7 +19,6 @@ echo "we install this in /opt/ under a new folder, collarbot. full path, /opt/co
 mkdir /opt/collarbot/
 wget -O /opt/collarbot/collarbot_config.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot_config.py'
 wget -O /opt/collarbot/collarbot.py 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.py'
-wget -O /opt/collarbot/transmitter 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/transmitter'
 echo "done! now we need to add your discord bot key so it works with YOUR bot"
 read -p "enter your bot key here then press enter: " botkey
 echo "botkey entered was" $botkey
@@ -36,5 +35,6 @@ echo " reloading systemd, enabling the service to start at boot, and finally, st
 wget -O /etc/systemd/system/collarbot.service 'https://raw.githubusercontent.com/smouldery/shock-collar-control/master/collarbot.service'
 chmod 755 /etc/systemd/system/collarbot.service
 systemctl daemon-reload
+systemctl enable --now pigpiod
 systemctl enable --now collarbot
 echo "in about 5-10 seconds your bot should now boot. check your discord server and try it! type !help for a list of commands"
