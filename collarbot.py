@@ -2,9 +2,6 @@ from collarbot_config import *
 ## this loads the TOKEN variable for the discord module.""
 ## you need a file in the same folder as this script with the name collarbot_config.py, containing one line, "TOKEN = '<yourtoken>'"
 
-from subprocess import call
-## allows us to call our C program using this. 
-
 import discord
 ## discord bot interface
 import time
@@ -18,6 +15,58 @@ import pigpio ## import the pigpio library for this function
 if len(key_) != 17:
     key_ = '00101100101001010'
 
+#string transmission module
+def transmitter(sequence, time_):
+    pi = pigpio.pi() # set the 'pi' variable to mean wean we need to access LOCAL pi
+
+    #set output pins
+    G1 = 17
+
+    pi.set_mode(G1, pigpio.OUTPUT) # GPIO 17 as output
+
+    pi.wave_clear() # clear existing waveforms
+
+    #create lists of parts of the wave we need 
+    start_=[]
+    one_=[]
+    zero_=[]
+    end_=[]
+    sequence_wave=[]
+
+    # define times
+    start_bit = 1540
+    start_delay = 800
+    space = 1040
+    zero_bit = 220
+    zero_delay = space - zero_bit
+    one_bit = 740
+    one_delay = space - one_bit 
+    EOS_delay = 7600
+
+    sequence_wave.append(pigpio.pulse(1<<G1, 0, start_bit))
+    sequence_wave.append(pigpio.pulse(0, 1<<G1, start_delay))
+
+    for x in range(0, 40): #adds the sequence bits to the waveform, in order.
+        if int(sequence[x]) == 0:
+            sequence_wave.append(pigpio.pulse(1<<G1, 0, zero_bit)) ## fix
+            sequence_wave.append(pigpio.pulse(0, 1<<G1, zero_delay))
+        else:
+            sequence_wave.append(pigpio.pulse(1<<G1, 0, one_bit)) ## fix
+            sequence_wave.append(pigpio.pulse(0, 1<<G1, one_delay))
+
+    sequence_wave.append(pigpio.pulse(0, 0, EOS_delay))
+
+    pi.wave_add_generic(sequence_wave)
+    waveID = pi.wave_create() #save the completed wave and send wave ID to var
+
+    pi.wave_send_repeat(waveID)
+    time.sleep(time_)
+    pi.wave_tx_stop() # stop waveform
+
+    pi.wave_clear() # clear all waveforms
+
+    pi.write(17, 0)
+    print("transmission done")
 ## tell the program how to transmit using a given mode, power and time.
 ## if you're wondering why there's a _, it's because stuff like time is reserved by python
 ## and was causing issues. so I changed them all to be _.
@@ -34,10 +83,8 @@ def transmit(mode_,power_,time_,channel_,key_):
     #power_binary = '{0:08b}'.format(int(power_))
     ## we convert the power value between 0-100 (After converting it to an interger) to a 7 bit binary encoded number. 
 
-    print(power_binary)
     ## this is for debugging purposes
 
-    print (str(channel_))
    
         ## def channel string:
     if channel_ == 2:
@@ -75,12 +122,8 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
-    print('raw str to transmit... ' + sequence + "\n")
-    print('c stuff start')
-    transmitter(sequence, time_)
-    print('c stuff done \n')
-    print('S' + sequence)
-    print('\n time: {0}'.format(str(time_)))
+    transmitter(sequence,time_)
+
 
 
 print("variables and functions defined")
@@ -124,7 +167,6 @@ async def on_message(message):
     if 'channel_' not in globals():
         global channel_
         channel_ = 1
-        print('channelset')
     ## note - the code is largely the same on these so i'll put full comments on one only to save space.
 
     ## mostly for debugging purposes.
@@ -175,15 +217,12 @@ async def on_message(message):
             return
         if message.content[12] == '%':
             power_ = message.content[9:12]
-            print(power_)
         else:
             msg = wrong_syntax_vibrate.format(message)
             await client.send_message(message.channel, msg)
             return
         if message.content[18] == 's' and float(message.content[14:18]) > 0.24 and float(message.content[14:18]) < 9.00:
             time_ = float(message.content[14:18])
-            
-            print(time_)
         else:
             
             msg = wrong_syntax_vibrate.format(message)
@@ -225,7 +264,6 @@ async def on_message(message):
             ## if it does, grab the power. we don't validate this as we assume if the syntax for the % matches,
             ## so do the preceeding 3 digits.
             power_ = message.content[9:12]
-            print(power_)
             ## debugging purposes. 
         else:
         ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
@@ -242,8 +280,6 @@ async def on_message(message):
             ## if it does, grab the time. we don't validate this as we assume if the syntax for the % matches,
             ## so do the preceeding 4 chars.
             
-            print(time_)
-            ## debugging purposes. 
         else:
             ## if syntax isn't followed, we assume it's wrong. pretty annoying but it's a known issue and priority to fix. 
             
