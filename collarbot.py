@@ -11,21 +11,12 @@ import time
 ## so we can use 'sleep'
 
 ## for the transmitter function:
-from transmitter import transmitter ## grab the transmitter function from the transmit file
 import pigpio ## import the pigpio library for this function
-
-## TIMINGS
-## see control-protocol.md on the github for this project for details of the timings and pictures etc.
-## the reason there's ones commented out is because I made manual adjustments and wanted to keep the old values. 
-## i'll probably delete later.
-
-
 
 ## key
 ## if no or incorrectly formatted key, set it manually
 if len(key_) != 17:
     key_ = '00101100101001010'
-
 
 ## tell the program how to transmit using a given mode, power and time.
 ## if you're wondering why there's a _, it's because stuff like time is reserved by python
