@@ -73,19 +73,16 @@ def transmitter(sequence, time_):
 def transmit(mode_,power_,time_,channel_,key_):
 
     print("transmitting now...")
-    ## this is for debugging purposes mostly. 
+    
 
-    # if int(power_) < 3 and mode_ is not 2:
-    # ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
-    #     power_ = 3
+    if int(power_) < 3 and mode_ is not 2:
+    ## this is to fix a bug affecting power 0-2 causing errors. increases power to three if it's 0-2 to avoid it. 
+        power_ = 3
 
-    power_binary = '0000101'
-    #power_binary = '{0:08b}'.format(int(power_))
+    power_binary = '{0:07b}'.format(int(power_))
+
     ## we convert the power value between 0-100 (After converting it to an interger) to a 7 bit binary encoded number. 
 
-    ## this is for debugging purposes
-
-   
         ## def channel string:
     if channel_ == 2:
         channel_sequence = '111'
