@@ -13,7 +13,7 @@ Hardware instructions, RF protocol decoding, and control software to enable remo
 
 Hope y'all enjoy it!
 
-  - Smouldery
+~smouldery
 
 2: Introduction:
   - 2.1: general intro:
@@ -22,19 +22,15 @@ this project aims to take manually controlled shock collars, and introduce a rem
 
   - 2.2: initial project scope:
     - 2.2.1: Initially, the testing is being done with an 'Esky® –Electronics Sky' shock collar, model 998DR-1. this model is tricky to find but similar versions can be found, and I suspect operate on the same protocols as the one I have. 
-    - 2.2.2: This collar operates on the 433mhz frequency, using a one-way radio transmission in binary strings of 42 bits in length (the first bit is timed differently and longer. this sequence incorporates 3 primary sections: an opening sequence of 7 bits which specifies collar channel and mode, what appears to be a remote 'key' of 13 bits that is static and identifies the remote, the power level of the action (shock or vibrate) as a whole number % between 0-100, encoded as a 7-bit binary number, and finally a 7 bit closing sequence, which is the inverse of the 7 bit starting sequence. This is transmitted for the duration it is desired the collar operate for, and the duration for which the collar receives the signal is the sole method shock time is regulated (collar cuts out at 10 seconds for safety reasons). further details of this protocol can be found in the [protocol](https://github.com/smouldery/shock-collar-control/wiki/protocol) section of the wiki, and the steps taken to decode it can be found in the [decoding the protocol](https://github.com/smouldery/shock-collar-control/wiki/decoding_the_protocol) section of the wiki
-  - 2.3 Hardware: at present, the controller runs on a Raspberry pi 2 (official hardware) and model 2008-8 433mhz transmitter of unknown origin (i.e. buy a cheap one). this just runs off the raspberry pi power provided via the pins. i'll be documenting this in detail on the wiki on the [hardware page](https://github.com/smouldery/shock-collar-control/wiki/hardware) so take a look there for further details.
+    - 2.2.2: This collar operates on the 433mhz frequency. further details of this protocol can be found in the [protocol](https://github.com/smouldery/shock-collar-control/wiki/protocol) section of the wiki, and the steps taken to decode it can be found in the [decoding the protocol](https://github.com/smouldery/shock-collar-control/wiki/decoding_the_protocol) section of the wiki
+  - 2.3 Hardware: at present, the controller runs on a Raspberry pi 2 (official hardware) and model 2008-8 433mhz transmitter of unknown origin (i.e. buy a cheap one). this just runs off the raspberry pi power provided via the pins. it should run on most raspberry pi's (tested on the zero) i'll be documenting this in detail on the wiki on the [hardware page](https://github.com/smouldery/shock-collar-control/wiki/hardware) so take a look there for further details.
     
 3: the code so far...
-  - 3.1: current status: at present, the code is operating in what seems to be a stable manner. I have a discord bot running on a test server that responds to commands like !shock 050% 4.00s reliably. this code runs in python3 as this was what the discord library in python used. 
-  - 3.2: limitations / current bugs: 
-    - 3.2.1: moved to issues
-    - 3.2.2: moved to issues
-  - 3.3 Setup of current project: see wiki page [here](https://github.com/smouldery/shock-collar-control/wiki/setup)
+  - 3.1: current status: at present, the code is operating in what seems to be a stable manner. I have a discord bot running on a test server that responds to commands like !shock 050% 4.00s reliably. 
+  - 3.2 Setup of current project: see wiki page [here](https://github.com/smouldery/shock-collar-control/wiki/setup)
   
 4: future plans:
   - 4.1: Sourcing and decoding / verifying compatability of a currently sold collar: I'll be working on buying and testing a collar that's avaliable in most places and can be readily identified, so users can be sure to have a collar that works out of the box. 
-  - 4.2: moved to a github issue. 
   - 4.3: documentation documentation documentation! this will be my FIRST priority and i'll focus on setup first, then outline my process for decoding the collar. i'll also attach some documetation / photo of the collar itself so if anyone wants to jump in and try and secure one themselves they can try and get a reasonably compatible one. 
   
  Thanks for reading, comments or suggestions are welcome, keep them sfw please folks!
