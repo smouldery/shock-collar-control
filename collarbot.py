@@ -6,6 +6,7 @@ import discord
 ## discord bot interface
 import time
 ## so we can use 'sleep'
+import random ## so we can use roulette
 
 ## for the transmitter function:
 import pigpio ## import the pigpio library for this function
@@ -131,7 +132,7 @@ client = discord.Client()
 
 ## defs of message conetent
 
-help_message = ('Hi there! \n i\'m is still incomplete but right now I can: \n- Flash the collar, say !flash \n- Beep the collar, say !beep \n- Vibrate the collar, say !vibrate 003% 0.50s, where 003% is a power level between 003 and {0}, and 0.50s is a time between 0.25 and {1}. \n- administrate a shock! Say !shock:3 003% 0.50s, where 003% is a power level between 003 and {2}, and 0.50s is a time between 0.25 and {3}.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock. \n- print this help promt using !help \n- Test if the bot is online using !test \n set output to channel 1 using !channel \n set output to channel 2 using !channel2'.format(str(VibrateMaxLevel), str(VibrateMaxTime), str(ShockMaxLevel), str(ShockMaxTime)))
+help_message = ('Hi there! \n i\'m is still incomplete but right now I can: \n- Flash the collar, say !flash \n- Beep the collar, say !beep \n- Vibrate the collar, say !vibrate 003% 0.50s, where 003% is a power level between 003 and {0}, and 0.50s is a time between 0.25 and {1}. \n- administrate a shock! Say !shock:3 003% 0.50s, where 003% is a power level between 003 and {2}, and 0.50s is a time between 0.25 and {3}.\n PLEASE BE CONSERVATIVE WITH POWER LEVELS, 100 is a VERY strong shock. \n- print this help promt using !help \n- Test if the bot is online using !test \n set output to channel 1 using !channel \n set output to channel 2 using !channel2 \n have some fun by typing !shockroulette or !sr which, 1 time out of {4} will give a shock'.format(str(VibrateMaxLevel), str(VibrateMaxTime), str(ShockMaxLevel), str(ShockMaxTime), str(roulette_chance)))
 
 shock_mode_disabled = 'shock mode is disabled. if this is not desired, please modify config file and restart the bot. otherwise, please choose a non-shock command.'
 
@@ -171,6 +172,36 @@ async def on_message(message):
         msg = '{0.author.mention}, online!'.format(message)
         await client.send_message(message.channel, msg)
  
+    ## 'roulette' 1/x chance of a shock!
+    if message.content.startswith('!shockroulette') or message.content.startswith('!sr'):
+        msg = '{0.author.mention}, spinning the wheel of fate...'.format(message)
+        await client.send_message(message.channel, msg)
+        time.sleep(roulette_delay)
+        if ShockEnabled == False:
+            msg = shock_mode_disabled.format(message)
+            await client.send_message(message.channel, msg)
+            return
+        elif random.randint(1, roulette_chance) == 1:
+            mode_ = 4
+            if roulette_level_fixed == False:
+                power_ = random.randint(1, ShockMaxLevel)
+                time_ = float(random.randint(1, int(ShockMaxTime)))
+            else:
+                power_ = ShockDefaultLevel
+                time_ = ShockDefaultTime
+            transmit(mode_,power_,time_,channel_,key_)
+            msg = '{0.author.mention}, ZZZAPPED at {1}% power for {2}s'.format(message, str(power_), str(time_))
+            await client.send_message(message.channel, msg)                
+            return
+        else:
+            mode_ = 3
+            power_ = 100
+            time_ = 0.70
+            transmit(mode_,power_,time_,channel_,key_)
+            msg = '{0.author.mention}, *click*'.format(message)
+            await client.send_message(message.channel, msg)                
+            return
+
     ## list commands and format, and default values when user says !help
     if message.content.startswith('!help'):
         msg = help_message.format(message)
