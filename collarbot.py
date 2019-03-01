@@ -148,13 +148,13 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('!channel1'):
+    if message.content.startswith('{0}channel1'.format(command_char)):
         global channel_
         channel_ = 1
         msg = '{0.author.mention}, set to channel 1!'.format(message)
         await client.send_message(message.channel, msg)
         return
-    if message.content.startswith('!channel2'):
+    if message.content.startswith('{0}channel2'.format(command_char)):
         global channel_
         channel_ = 2
         msg = '{0.author.mention}, set to channel 2!'.format(message)
@@ -168,12 +168,12 @@ async def on_message(message):
     ## note - the code is largely the same on these so i'll put full comments on one only to save space.
 
     ## mostly for debugging purposes.
-    if message.content.startswith('!test'):
+    if message.content.startswith('{0}test'.format(command_char)):
         msg = '{0.author.mention}, online!'.format(message)
         await client.send_message(message.channel, msg)
  
     ## 'roulette' 1/x chance of a shock!
-    if message.content.startswith('!shockroulette') or message.content.startswith('!sr'):
+    if message.content.startswith('{0}shockroulette'.format(command_char)) or message.content.startswith('{0}sr'.format(command_char)):
         msg = '{0.author.mention}, spinning the wheel of fate...'.format(message)
         await client.send_message(message.channel, msg)
         time.sleep(roulette_delay)
@@ -203,12 +203,12 @@ async def on_message(message):
             return
 
     ## list commands and format, and default values when user says !help
-    if message.content.startswith('!help'):
+    if message.content.startswith('{0}help'.format(command_char)):
         msg = help_message.format(message)
         await client.send_message(message.channel, msg)
 
     ## function to flash the collar. currently stuck on 1 second for convenience.
-    if message.content.startswith('!flash'):
+    if message.content.startswith('{0}flash'.format(command_char)):
         mode_ = 1
         power_ = 1
         time_ = 1
@@ -217,7 +217,7 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
     ## function to beep the collar. currently stuck on 1 second for convenience.
-    if message.content.startswith('!beep'):
+    if message.content.startswith('{0}beep'.format(command_char)):
         mode_ = 2
         power_ = 1
         time_ = 1
@@ -227,10 +227,10 @@ async def on_message(message):
 
         
     ## fully functional vibration of collar. can set time and power. 
-    if message.content.startswith('!vibrate'):
+    if message.content.startswith('{0}vibrate'.format(command_char)):
         mode_ = 3
 
-        if message.content == '!vibrate':
+        if message.content == '{0}vibrate'.format(command_char):
             power_ = int(VibrateDefaultLevel)
             time_ = float(VibrateDefaultTime)
             transmit(mode_,power_,time_,channel_,key_)
@@ -262,7 +262,7 @@ async def on_message(message):
 
 
     #shocks the collar. this one will have full annotation, code is the same as above examples. 
-    if message.content.startswith('!shock:3'):
+    if message.content.startswith('{0}shock:3'.format(command_char)):
     ## I know the :3 is annoying but it caused issues if it's not there -
     ## code parsing has to be adjusted and it broke when it was 2 chars shorter
         
@@ -273,7 +273,7 @@ async def on_message(message):
             msg = shock_mode_disabled.format(message)
             await client.send_message(message.channel, msg)
             return
-        if message.content == '!shock:3':
+        if message.content == '{0}shock:3'.format(command_char):
             power_ = int(ShockDefaultLevel)           
             time_ = float(ShockDefaultTime)
             channel_ = 1

@@ -1,4 +1,5 @@
 # command character (useful when there's multiple bots, default '!')
+# for now, must be ONE character long ONLY otherwise everything breaks!
 command_char = '!'
 # enable shock mode? if 'True', enabled, if 'False', Disabled. 
 ShockEnabled = True
