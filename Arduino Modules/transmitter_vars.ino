@@ -1,74 +1,97 @@
+// thanks to @mikey_dk for help with large parts of this code + formatting! https://twitter.com/mikey_dk 
 
-// STILL A WIP
-const int TransPin =  13;// the number of the LED pin
+
+// Constant variables
+const int TransPin =  LED_BUILTIN;// the number of the LED pin
+const String key = "00101100101001010";
+ 
+// Variables which do change
+int collar_mode = 3;
+int collar_chan = 1;
+int collar_duration = 1000; // time to transmit in us
+String Power = "0000101"; // 7 bit binary number, 0-100 in decimal
+ 
 String sequence;
 String power;
-
-void one(){
+String channelnorm;
+String channelinv;
+String modenorm;
+String modeinv;
+ 
+void transmit_command(int c, int m, int d)
+{
+  switch (c) // Check the channel
+  {
+    case 1: // Channel 1
+      channelnorm = "111";
+      channelinv = "000";
+      break;
+    default: // Channel 0
+      channelnorm = "000";
+      channelinv = "111";
+      break;
+  }
+ 
+  switch (m) // Check the mode
+  {
+    case 1: // Light
+      modenorm = "1000";
+      modeinv = "1110";
+      break;
+    case 2: // Beep
+      modenorm = "0100";
+      modeinv = "1101";
+      break;
+    case 4: // Shock
+      modenorm = "1000";
+      modeinv = "1110";
+      break;
+    default: // Vibrate
+      modenorm = "0010";
+      modeinv = "1011";
+      break;
+  }
+ 
+  String sequence = "1" + channelnorm + modenorm + power + key + modeinv + channelinv + "00";
+ 
+  unsigned long cmd_start = millis();
+  while (millis() - cmd_start < d)
+  {
+    // start bit
     digitalWrite(TransPin, HIGH);
-    delayMicroseconds(730); // wait 730 uS 
+    delayMicroseconds(1500); // wait 1500 uS
     digitalWrite(TransPin, LOW);
-    delayMicroseconds(70);// wait 70 uS
-}
-void zero(){
-    digitalWrite(TransPin, HIGH);
-    delayMicroseconds(150); // wait 730 uS 
-    digitalWrite(TransPin, LOW);
-    delayMicroseconds(650);// wait 70 uS
-}
-void setup() {
-    // set the digital pin as output:
-    pinMode(TransPin, OUTPUT);
-
-}
-void loop() {
-  	// set Variables
-    String Power = "0000101"; // 7 bit binary number, 0-100 in decimal
-    int mode = 3;
-    int channel = 1;
-    String key = "00101100101001010";
-    
-    String channelnorm;
-    String channelinv;
-    String modenorm;
-    String modeinv;
-    
-    if(channel == 1){
-    String channelnorm = "111";
-    String channelinv = "000";
-    } else {
-    String channelnorm = "000";
-    String channelinv = "111";
+    delayMicroseconds(730);// wait 730 uS
+ 
+    for (int n = 0; n < 40 ; n++)
+    {
+      if (sequence.charAt(n) == '1') // Transmit a one
+      {
+        digitalWrite(TransPin, HIGH);
+        delayMicroseconds(730); // wait 730 uS
+        digitalWrite(TransPin, LOW);
+        delayMicroseconds(70);// wait 70 uS
+      }
+      else // Transmit a zero
+      {
+        digitalWrite(TransPin, HIGH);
+        delayMicroseconds(150); // wait 150 uS
+        digitalWrite(TransPin, LOW);
+        delayMicroseconds(650);// wait 650 uS
+      }
     }
-
-    if(mode == 1){
-        String modenorm = "1000";
-        String modeinv = "1110";
-    } else if (mode == 2) {
-        String modenorm = "0100";
-        String modeinv = "1101";
-    } else if (mode == 4) {
-        String modenorm = "1000";
-        String modeinv = "1110";
-    } else {
-        String modenorm = "0010";
-        String modeinv = "1011";
-    }
-    String sequence = "1" + channelnorm + modenorm + power + key + modeinv + channelinv + "00";
-  	
-  	// start bit
-    digitalWrite(TransPin, HIGH);
-    delayMicroseconds(1500); // wait 730 uS 
-    digitalWrite(TransPin, LOW);
-    delayMicroseconds(730);// wait 70 uS
-  	int n = 0;
-    for (n = 0; n < 40 ; n++) {
-        if (sequence.charAt(n) == '1'){
-            one();
-        } else {
-            zero();
-        }
-    }
-
-    delayMicroseconds(4500); // add delay between packets
+  }
+}
+ 
+void setup()
+{
+  pinMode(TransPin, OUTPUT); // Set transmitter pin as an output
+  Serial.begin(115200);
+}
+ 
+void loop()
+{
+  collar_mode = 3;
+  transmit_command(collar_chan, collar_mode, collar_duration);
+  delay(1000);
 }

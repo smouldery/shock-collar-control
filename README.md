@@ -42,4 +42,6 @@ this project aims to take manually controlled shock collars, and introduce a rem
 HUGE THANKS TO THE FOLLOWING PEOPLE:
 
 - thank you to Github user CodeYouFools for help with systemd and some file path / install courtesy updates, as well as general suggestions and help
+
+- thanks to @mikey_dk for help with large parts of the arduino code + formatting! https://twitter.com/mikey_dk 
    
