@@ -1,3 +1,4 @@
+
 # setup for  collarbot, tested on Rasbian 9 (Stretch)
 echo "starting the install now"
 
