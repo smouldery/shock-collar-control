@@ -1,6 +1,6 @@
 // thanks to @mikey_dk for help with large parts of this code + formatting! https://twitter.com/mikey_dk 
-// This is free and unencumbered software released into the public domain. see LICENSE file or 
-// https://unlicense.org/ for full text of licencse. 
+// This is free and unencumbered software released into the public domain. 
+// see LICENSE file or https://unlicense.org/ for full text of license.
 
 // Tested by @mikey_dk and working on all modes. 
 

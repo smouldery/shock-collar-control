@@ -1,3 +1,6 @@
+## This is free and unencumbered software released into the public domain. 
+## see LICENSE file or https://unlicense.org/ for full text of license.
+
 # command character (useful when there's multiple bots, default '!')
 # for now, must be ONE character long ONLY otherwise everything breaks!
 command_char = '!'

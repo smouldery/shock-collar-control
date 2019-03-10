@@ -1,5 +1,9 @@
 ## NOT RECCOMENDED - THIS MODULE IS DEPRECIATED AND NO LONGER MAINTAINED
 ## NOT GUARANTEED TO WORK
+
+## This is free and unencumbered software released into the public domain. 
+## see LICENSE file or https://unlicense.org/ for full text of license.
+
 ## takes PARAMATERS and transmits 
 ## python3 transmitter_vars.py mode power time channel key (opt)
 

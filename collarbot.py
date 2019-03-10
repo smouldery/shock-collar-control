@@ -1,3 +1,6 @@
+## This is free and unencumbered software released into the public domain. 
+## see LICENSE file or https://unlicense.org/ for full text of license.
+
 from collarbot_config import *
 ## this loads the TOKEN variable for the discord module.""
 ## you need a file in the same folder as this script with the name collarbot_config.py, containing one line, "TOKEN = '<yourtoken>'"
@@ -16,9 +19,10 @@ import pigpio ## import the pigpio library for this function
 if len(key_) != 17:
     key_ = '00101100101001010'
 
+pi = pigpio.pi() # set the 'pi' variable to mean wean we need to access LOCAL pi
+
 #string transmission module
 def transmitter(sequence, time_):
-    pi = pigpio.pi() # set the 'pi' variable to mean wean we need to access LOCAL pi
 
     #set output pins
     G1 = 17
@@ -117,9 +121,10 @@ def transmit(mode_,power_,time_,channel_,key_):
 
     key_sequence = key_
     
-
     sequence = '1' + channel_sequence + mode_sequnce + key_sequence + power_binary + mode_sequnce_inverse + channel_sequence_inverse + '00'
 
+    while pi.wave_tx_busy(): # wait for prior waveform to be sent
+        time.sleep(0.2)
     transmitter(sequence,time_)
 
 
