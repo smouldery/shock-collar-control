@@ -74,7 +74,7 @@ void transmit_command(int c, int m, int d, int p = 0)
   }
   power = power + String(p, BIN);
 
-  String sequence = "1" + channelnorm + modenorm + power + key + modeinv + channelinv + "00";
+  String sequence = "1" + channelnorm + modenorm + key + power + modeinv + channelinv + "00";
 
   digitalWrite(pin_led, LOW);
   unsigned long cmd_start = millis();
@@ -86,7 +86,7 @@ void transmit_command(int c, int m, int d, int p = 0)
     digitalWrite(pin_rtx, LOW);
     delayMicroseconds(741);// wait 741 uS
 
-    for (int n = 0; n < 40 ; n++)
+    for (int n = 0; n < 41 ; n++)
     {
       if (sequence.charAt(n) == '1') // Transmit a one
       {
