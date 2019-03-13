@@ -11,9 +11,8 @@
 // being used under a BSD licence.**
 
 // The first part of this code  (code from this point foward and before noted otherwise)
-// is covered by the license of this repository:
-// https://raw.githubusercontent.com/smouldery/shock-collar-control/master/LICENSE
-
+// is is free and unencumbered software released into the public domain. 
+// see LICENSE file or https://unlicense.org/ for full text of license.
 
 #include <time.h> // nanosleep ()
 #include <string.h> // so we can do stuff with strings
@@ -156,7 +155,7 @@ int main(int argc, const char **argv) {
 }
 // CONTENT BEYOND THIS POINT IS LICENSED UNDER CC BY-SA 3.0
 // adapted from work by Guillermo A. Amaral B. <g@maral.me>
-// the code below this notice is NOT covered by the license repository
+// the code below this notice is NOT covered by the default license repository
 // and instead uses the CC BY-SA 3.0 License
 
 int

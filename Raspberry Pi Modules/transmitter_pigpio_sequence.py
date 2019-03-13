@@ -1,3 +1,6 @@
+## This is free and unencumbered software released into the public domain. 
+## see LICENSE file or https://unlicense.org/ for full text of license.
+
 ## this file takes TWO arguments, a 41 bit string and a float time value
 
 

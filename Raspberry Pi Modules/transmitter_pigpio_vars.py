@@ -1,6 +1,9 @@
 ## takes PARAMATERS and transmits 
 ## python3 transmitter_vars.py mode power time channel key (opt)
 
+## This is free and unencumbered software released into the public domain. 
+## see LICENSE file or https://unlicense.org/ for full text of license.
+
 import pigpio # for pulse control
 import time # for sleep()
 import sys # to import variables from command line call
