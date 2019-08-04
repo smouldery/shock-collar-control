@@ -1,3 +1,7 @@
+# **UPDATE**
+A lot of people are ordering collars and finding they're either a) not operating on 433mhz and/or b) using a modified protocol
+be careful y'all. a partial fix to B comes courtesy of one Dr. Wumpus, Esq. and can be found in the code folders. 
+
 
 # shock-collar-control
 Hardware instructions, RF protocol decoding, and control software to enable remote control of commercially available shock collars
@@ -39,5 +43,7 @@ HUGE THANKS TO THE FOLLOWING PEOPLE:
 
 - thank you to Github user CodeYouFools for help with systemd and some file path / install courtesy updates, as well as general suggestions and help
 
-- thanks to @mikey_dk for help with large parts of the arduino code + formatting! https://twitter.com/mikey_dk 
+- thanks to @mikey_dk for help with large parts of the arduino code + formatting! 
+
+- thanks to Dr. Wumpus, Esq. for both flagging the issue where collars use a different protocol and providing alternate code. 
    
