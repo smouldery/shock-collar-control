@@ -2,6 +2,9 @@
 A lot of people are ordering collars and finding they're either a) not operating on 433mhz and/or b) using a modified protocol
 be careful y'all. a partial fix to B comes courtesy of one Dr. Wumpus, Esq. and can be found in the code folders. 
 
+## ALSO:
+Check this out - someone made an awesome arduinio implimentation that automagically finds the code. https://github.com/flash89y/Arduino/tree/master/libraries/DogCollar2 
+
 
 # shock-collar-control
 Hardware instructions, RF protocol decoding, and control software to enable remote control of commercially available shock collars
